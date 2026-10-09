@@ -3,351 +3,282 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
- content="width=device-width,initial-scale=1">
-<title>Video Converter - MP4変換</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Video Studio | 動画変換ツール</title>
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+ margin:0;background:#0f172a;color:white;
+ font-family:Arial,"Meiryo",sans-serif
 }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
+header{
+ text-align:center;padding:40px 15px;
+ background:linear-gradient(120deg,#7c3aed,#2563eb)
 }
-
-header {
-  padding: 45px 20px;
-  text-align: center;
-  background: linear-gradient(120deg,#7c3aed,#2563eb);
+header h1{margin:0;font-size:34px}
+header p{color:#ddd6fe}
+main{max-width:850px;margin:30px auto;padding:0 15px}
+.card{
+ background:#1e293b;border-radius:15px;
+ padding:25px;margin-bottom:25px
 }
-
-header h1 {
-  font-size: 34px;
-  margin: 0;
+input[type=url]{
+ width:100%;padding:15px;border-radius:8px;
+ border:1px solid #64748b;
+ background:#0f172a;color:white;font-size:16px
 }
-
-header p {
-  color: #ddd6fe;
+button{
+ width:100%;padding:15px;margin-top:15px;
+ border:0;border-radius:8px;background:#6366f1;
+ color:white;font-size:16px;font-weight:bold;cursor:pointer
 }
-
-main {
-  max-width: 850px;
-  margin: 35px auto;
-  padding: 0 20px;
+button:hover{background:#4f46e5}
+button:disabled{opacity:.5;cursor:wait}
+.frame{aspect-ratio:16/9;margin-top:20px;display:none}
+iframe{width:100%;height:100%;border:0;border-radius:10px}
+.drop{
+ border:2px dashed #818cf8;border-radius:12px;
+ text-align:center;padding:35px 15px;
+ margin-top:20px;cursor:pointer;background:#172554
 }
-
-.card {
-  background: #1e293b;
-  border-radius: 16px;
-  padding: 30px;
+.drop.over{background:#312e81}
+video{width:100%;margin-top:20px}
+progress{width:100%;margin-top:20px}
+#download{
+ display:none;background:#16a34a;
+ color:white;text-decoration:none;
+ padding:15px;text-align:center;
+ border-radius:8px;margin-top:15px
 }
-
-.drop {
-  padding: 45px 20px;
-  margin: 25px 0;
-  border: 2px dashed #818cf8;
-  border-radius: 12px;
-  background: #172554;
-  text-align: center;
-  cursor: pointer;
-}
-
-.drop.dragover {
-  background: #312e81;
-}
-
-.drop h3 {
-  margin-bottom: 8px;
-}
-
-.drop p {
-  color: #cbd5e1;
-}
-
-button {
-  padding: 15px;
-  border: none;
-  background: #6366f1;
-  color: white;
-  border-radius: 9px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-button:hover {
-  background: #4f46e5;
-}
-
-button:disabled {
-  opacity: .5;
-  cursor: wait;
-}
-
-.full {
-  width: 100%;
-}
-
-video {
-  width: 100%;
-  max-height: 350px;
-  background: black;
-  border-radius: 10px;
-  margin: 15px 0;
-}
-
-progress {
-  width: 100%;
-  height: 18px;
-  margin-top: 20px;
-}
-
-#download {
-  display: none;
-  margin-top: 20px;
-  background: #16a34a;
-  text-decoration: none;
-  text-align: center;
-  padding: 16px;
-  border-radius: 9px;
-  color: white;
-  font-weight: bold;
-}
-
-#status {
-  margin-top: 15px;
-  color: #cbd5e1;
-  overflow-wrap: anywhere;
-}
-
-.note {
-  color: #94a3b8;
-  font-size: 13px;
-  margin-top: 20px;
-}
-
-footer {
-  text-align: center;
-  padding: 30px;
-  color: #94a3b8;
-}
+.msg{color:#cbd5e1;margin-top:12px;overflow-wrap:anywhere}
+.note{color:#94a3b8;font-size:13px;line-height:1.7}
+footer{text-align:center;padding:25px;color:#94a3b8}
 </style>
 </head>
 
 <body>
-
 <header>
-  <h1>🎬 Video Converter</h1>
-  <p>無料で動画をMP4に変換</p>
+ <h1>🎬 Video Studio</h1>
+ <p>動画の再生・MP4変換ツール</p>
 </header>
 
 <main>
 <section class="card">
+ <h2>▶ YouTube動画を再生</h2>
+ <p>YouTubeのURLを貼り付けてください。</p>
+ <input id="youtubeURL" type="url"
+  placeholder="https://www.youtube.com/watch?v=...">
+ <button id="showButton">動画を表示</button>
+ <p id="youtubeMessage" class="msg"></p>
 
-  <h2>MP4変換ツール</h2>
-  <p>動画ファイルを選択してください。</p>
+ <div class="frame" id="frame">
+  <iframe id="player"
+   title="YouTube player"
+   referrerpolicy="strict-origin-when-cross-origin"
+   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+   allowfullscreen>
+  </iframe>
+ </div>
+ <a id="youtubeLink" target="_blank"
+  rel="noopener noreferrer"
+  style="display:none;color:#93c5fd;margin-top:15px">
+  YouTubeで動画を開く
+ </a>
+ <p class="note">
+  動画のダウンロードには対応していません。
+  投稿者の設定によっては埋め込み再生できない場合があります。
+ </p>
+</section>
 
-  <div class="drop" id="drop">
-    <h2>📁</h2>
-    <h3>動画をドラッグ＆ドロップ</h3>
-    <p>またはクリックして選択</p>
-    <input type="file" id="fileInput"
-      accept="video/*,.mov,.avi,.mkv"
-      hidden>
-  </div>
+<section class="card">
+ <h2>📁 動画をMP4に変換</h2>
+ <p>パソコンに保存してある動画を選択してください。</p>
 
-  <p id="fileName">ファイル未選択</p>
+ <div class="drop" id="drop">
+  <h2>☁️</h2>
+  <strong>動画をドラッグ＆ドロップ</strong>
+  <p>またはクリックして選択</p>
+  <input type="file" id="file"
+   accept="video/*,.mov,.mkv,.avi" hidden>
+ </div>
 
-  <video id="preview" controls
-    style="display:none"></video>
+ <p id="filename">ファイル未選択</p>
+ <video id="preview" controls style="display:none"></video>
 
-  <button class="full" id="convertButton">
-    MP4に変換する
-  </button>
+ <button id="convert">MP4に変換する</button>
+ <progress id="progress" value="0" max="100"></progress>
+ <p id="status" class="msg">準備完了</p>
 
-  <progress id="progress"
-    value="0" max="100"></progress>
+ <a id="download">⬇ MP4をダウンロード</a>
 
-  <div id="status">準備完了</div>
-
-  <a id="download">MP4をダウンロード</a>
-
-  <p class="note">
-    変換はブラウザ内で実行されます。
-    大きな動画は処理に時間がかかる場合があります。
-    初回は変換ライブラリをインターネットから読み込みます。
-  </p>
-
+ <p class="note">
+  動画はブラウザ内で処理します。
+  初回はインターネットから変換ライブラリを読み込みます。
+  大きなファイルや一部の動画形式は変換できないことがあります。
+ </p>
 </section>
 </main>
 
-<footer>
-  Video Converter - Free MP4 Tool
-</footer>
+<footer>Video Studio - Free Video Tools</footer>
 
 <script type="module">
 import { FFmpeg } from
  "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.15/dist/esm/index.js";
-
 import { fetchFile, toBlobURL } from
  "https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.2/dist/esm/index.js";
 
-const ffmpeg = new FFmpeg();
-
-const input = document.getElementById("fileInput");
-const drop = document.getElementById("drop");
-const preview = document.getElementById("preview");
-const button = document.getElementById("convertButton");
-const status = document.getElementById("status");
-const progress = document.getElementById("progress");
-const download = document.getElementById("download");
-
-let selectedFile = null;
-let previewURL = null;
-let outputURL = null;
-let loaded = false;
-
-function selectFile(file) {
-  if (!file) return;
-
-  selectedFile = file;
-  document.getElementById("fileName").textContent =
-    file.name;
-
-  if (previewURL) URL.revokeObjectURL(previewURL);
-  if (outputURL) URL.revokeObjectURL(outputURL);
-
-  previewURL = URL.createObjectURL(file);
-  preview.src = previewURL;
-  preview.style.display = "block";
-
-  download.style.display = "none";
-  progress.value = 0;
-  status.textContent = "変換準備完了";
+// YouTube URLの確認
+function youtubeId(raw){
+ try{
+  const u=new URL(raw);
+  let id=null;
+  if(["youtu.be","www.youtu.be"].includes(u.hostname)){
+   id=u.pathname.split("/")[1];
+  }else if([
+   "youtube.com","www.youtube.com","m.youtube.com"
+  ].includes(u.hostname)){
+   if(u.pathname==="/watch"){
+    id=u.searchParams.get("v");
+   }else if(/^\/(shorts|live|embed)\//.test(u.pathname)){
+    id=u.pathname.split("/")[2];
+   }
+  }
+  return /^[A-Za-z0-9_-]{11}$/.test(id||"")?id:null;
+ }catch{return null}
 }
 
-drop.addEventListener("click", () => input.click());
+document.getElementById("showButton").onclick=()=>{
+ const id=youtubeId(
+  document.getElementById("youtubeURL").value.trim()
+ );
+ const message=document.getElementById("youtubeMessage");
+ const frame=document.getElementById("frame");
+ const link=document.getElementById("youtubeLink");
+ const player=document.getElementById("player");
 
-input.addEventListener("change", () => {
-  selectFile(input.files[0]);
+ if(!id){
+  message.textContent="正しいYouTube URLを入力してください。";
+  frame.style.display="none";
+  link.style.display="none";
+  player.removeAttribute("src");
+  return;
+ }
+
+ message.textContent="";
+ player.src="https://www.youtube.com/embed/"+id;
+ frame.style.display="block";
+ link.href="https://www.youtube.com/watch?v="+id;
+ link.style.display="inline-block";
+};
+
+// ファイル選択
+const input=document.getElementById("file");
+const drop=document.getElementById("drop");
+const preview=document.getElementById("preview");
+const status=document.getElementById("status");
+const progress=document.getElementById("progress");
+const download=document.getElementById("download");
+const convert=document.getElementById("convert");
+
+let file=null;
+let previewURL=null;
+let downloadURL=null;
+const ffmpeg=new FFmpeg();
+let loaded=false;
+
+function selectFile(f){
+ if(!f)return;
+ file=f;
+ document.getElementById("filename").textContent=f.name;
+ if(previewURL)URL.revokeObjectURL(previewURL);
+ if(downloadURL)URL.revokeObjectURL(downloadURL);
+ previewURL=URL.createObjectURL(f);
+ preview.src=previewURL;
+ preview.style.display="block";
+ download.style.display="none";
+ progress.value=0;
+ status.textContent="変換準備完了";
+}
+
+drop.onclick=()=>input.click();
+input.onchange=()=>selectFile(input.files[0]);
+drop.ondragover=e=>{
+ e.preventDefault();
+ drop.classList.add("over");
+};
+drop.ondragleave=()=>drop.classList.remove("over");
+drop.ondrop=e=>{
+ e.preventDefault();
+ drop.classList.remove("over");
+ selectFile(e.dataTransfer.files[0]);
+};
+
+ffmpeg.on("progress",({progress:p})=>{
+ progress.value=Math.round(Math.max(0,Math.min(1,p))*100);
 });
 
-drop.addEventListener("dragover", e => {
-  e.preventDefault();
-  drop.classList.add("dragover");
-});
+// FFmpeg読み込み
+async function loadFFmpeg(){
+ if(loaded)return;
+ status.textContent="変換エンジンを読み込み中...";
+ const base="https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
+ await ffmpeg.load({
+  coreURL:await toBlobURL(
+   base+"/ffmpeg-core.js","text/javascript"),
+  wasmURL:await toBlobURL(
+   base+"/ffmpeg-core.wasm","application/wasm")
+ });
+ loaded=true;
+}
 
-drop.addEventListener("dragleave", () => {
-  drop.classList.remove("dragover");
-});
+// MP4変換
+convert.onclick=async()=>{
+ if(!file){
+  status.textContent="動画を選択してください。";
+  return;
+ }
+ convert.disabled=true;
+ download.style.display="none";
+ progress.value=0;
+ const name=file.name;
+ const ext=(name.split(".").pop()||"bin")
+  .replace(/[^A-Za-z0-9]/g,"").toLowerCase();
+ const inputName="input."+ext;
 
-drop.addEventListener("drop", e => {
-  e.preventDefault();
-  drop.classList.remove("dragover");
-  selectFile(e.dataTransfer.files[0]);
-});
+ try{
+  await loadFFmpeg();
+  status.textContent="MP4へ変換中...";
+  await ffmpeg.writeFile(inputName,await fetchFile(file));
 
-ffmpeg.on("progress", ({progress: p}) => {
-  progress.value = Math.round(
-    Math.max(0,Math.min(1,p)) * 100
+  const code=await ffmpeg.exec([
+   "-i",inputName,
+   "-c:v","libx264",
+   "-preset","ultrafast",
+   "-crf","28",
+   "-c:a","aac",
+   "-movflags","+faststart",
+   "output.mp4"
+  ]);
+  if(code!==0)throw new Error("変換できませんでした");
+
+  const data=await ffmpeg.readFile("output.mp4");
+  downloadURL=URL.createObjectURL(
+   new Blob([data],{type:"video/mp4"})
   );
-});
-
-async function loadFFmpeg() {
-  if (loaded) return;
-
-  status.textContent = "変換エンジンを読み込み中...";
-
-  const base =
-    "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
-
-  await ffmpeg.load({
-    coreURL: await toBlobURL(
-      `${base}/ffmpeg-core.js`,
-      "text/javascript"
-    ),
-    wasmURL: await toBlobURL(
-      `${base}/ffmpeg-core.wasm`,
-      "application/wasm"
-    )
-  });
-
-  loaded = true;
-}
-
-button.addEventListener("click", async () => {
-  if (!selectedFile) {
-    alert("動画ファイルを選択してください");
-    return;
-  }
-
-  button.disabled = true;
-  progress.value = 0;
-  download.style.display = "none";
-
-  const name = selectedFile.name;
-  const extension = name.split(".").pop()
-    .toLowerCase();
-
-  const inputName = "input." +
-    extension.replace(/[^a-z0-9]/g,"");
-
-  try {
-    await loadFFmpeg();
-
-    status.textContent = "MP4に変換中...";
-
-    await ffmpeg.writeFile(
-      inputName, await fetchFile(selectedFile)
-    );
-
-    const result = await ffmpeg.exec([
-      "-i", inputName,
-      "-c:v", "libx264",
-      "-preset", "ultrafast",
-      "-crf", "28",
-      "-c:a", "aac",
-      "-movflags", "+faststart",
-      "output.mp4"
-    ]);
-
-    if (result !== 0) {
-      throw new Error("変換処理に失敗しました");
-    }
-
-    const data = await ffmpeg.readFile("output.mp4");
-
-    outputURL = URL.createObjectURL(
-      new Blob([data],{type:"video/mp4"})
-    );
-
-    download.href = outputURL;
-    download.download =
-      name.replace(/\.[^.]+$/,"") + ".mp4";
-
-    download.textContent = "⬇ MP4をダウンロード";
-    download.style.display = "block";
-
-    progress.value = 100;
-    status.textContent = "変換が完了しました！";
-
-    await ffmpeg.deleteFile(inputName);
-    await ffmpeg.deleteFile("output.mp4");
-
-  } catch(err) {
-    console.error(err);
-    status.textContent =
-      "エラー: " + err.message +
-      "（Live ServerまたはHTTPSで開いてください）";
-  } finally {
-    button.disabled = false;
-  }
-});
+  download.href=downloadURL;
+  download.download=name.replace(/\.[^.]+$/,"")+".mp4";
+  download.style.display="block";
+  progress.value=100;
+  status.textContent="変換完了！";
+  await ffmpeg.deleteFile("output.mp4");
+  await ffmpeg.deleteFile(inputName);
+ }catch(e){
+  console.error(e);
+  status.textContent="変換エラー: "+e.message;
+ }finally{
+  convert.disabled=false;
+ }
+};
 </script>
-
 </body>
 </html>
